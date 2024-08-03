@@ -5,9 +5,6 @@ from tqdm.contrib.concurrent import thread_map
 from botocore.config import Config
 from botocore import UNSIGNED
 
-bucket_name = "discogs-data-dumps"
-prefix = "data/"
-
 
 class S3DiscogsDowloader:
     """
@@ -68,7 +65,3 @@ class S3DiscogsDowloader:
         response = self.s3_list_objects()
         file_list = self.filter_files(response)
         self.download_files(file_list, directory)
-
-
-# discogs_downloader = S3DiscogsDowloader(bucket_name, prefix)
-# discogs_downloader.run(directory="data")
