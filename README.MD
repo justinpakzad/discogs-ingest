@@ -42,5 +42,3 @@ python duck_db.py --db <db_path> --csvs <csv_path>
 ## Data Model
 ![Description of the image](images/erd.png)
 
-## Contributing
-Any contributions are welcomed. Always interested in learning new ways to do things. 
