@@ -1,0 +1,6 @@
+raw_data/
+notebooks/
+.DS_Store
+.python-version
+src/__pycache__/
+discogs_data/
