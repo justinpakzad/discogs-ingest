@@ -1,5 +1,5 @@
 # Discogs Ingest
-Discogs Ingest is a Python program that extracts the most recent Discogs data dump, parses the XML files, and allows for exporting to CSV and DuckDB.
+Discogs Ingest is a Python program that extracts the most recent Discogs data dump, parses the XML files, and allows for exporting to CSV and DuckDB. I developed a separate script that scraped features such as the number of people who want the record, have the record, and price stats. This enriched data was only scraped for electronic music. If you are interested in the enriched dataset, please just reach out.
 
 ## Installation
 1. Clone the repository:
