@@ -35,6 +35,9 @@ def setup_writers(csv_path=None):
         "release_style_writer": ReleaseStyleWriter(
             file_name=f"{csv_path}/release_style.csv",
         ),
+        "release_genre_writer": ReleaseGenreWrite(
+            file_name=f"{csv_path}/release_genre.csv",
+        ),
         "release_company_writer": ReleaseCompanyWriter(
             file_name=f"{csv_path}/release_company.csv",
         ),
@@ -45,7 +48,12 @@ def setup_writers(csv_path=None):
         "master_video_writer": MasterVideoWriter(
             file_name=f"{csv_path}/master_video.csv",
         ),
-        "master_styles_writer": MasterStyles(file_name=f"{csv_path}/master_style.csv"),
+        "master_styles_writer": MasterStylesWriter(
+            file_name=f"{csv_path}/master_style.csv"
+        ),
+        "master_genre_writer": MasterStylesWriter(
+            file_name=f"{csv_path}/master_genre.csv"
+        ),
         "master_artist_writer": MasterArtistWriter(
             file_name=f"{csv_path}/master_artist.csv",
         ),

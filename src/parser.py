@@ -37,7 +37,7 @@ class ParserUtils:
             for g in (genres_element if genres_element is not None else [])
             if g.text is not None
         ]
-        return {"genre": genres[0] if len(genres) >= 1 else "", "style": styles}
+        return {"genre": genres, "style": styles}
 
     @staticmethod
     def parse_aliases(element):

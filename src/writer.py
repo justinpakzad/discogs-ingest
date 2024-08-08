@@ -146,13 +146,23 @@ class ReleaseWriter(SimpleWriter):
             "release_date",
             "notes",
             "country",
-            "genre",
             "is_master_release",
             "format",
             "format_description",
             "label_name",
             "label_id",
             "catno",
+        ]
+
+
+class ReleaseGenreWrite(NestedWriter):
+    def __init__(self, file_name=None) -> None:
+        super().__init__(file_name)
+        self.headers = ["release_id", "genre"]
+
+    def get_sub_items(self, row):
+        return [
+            {"release_id": row.get("id"), "genre": genre} for genre in row.get("genre")
         ]
 
 
@@ -258,7 +268,7 @@ class ReleaseVideoWriter(NestedWriter):
 class MasterWriter(SimpleWriter):
     def __init__(self, file_name=None) -> None:
         super().__init__(file_name)
-        self.headers = ["id", "title", "year", "genre", "data_quality"]
+        self.headers = ["id", "title", "year", "data_quality"]
 
 
 class MasterArtistWriter(NestedWriter):
@@ -292,7 +302,19 @@ class MasterVideoWriter(NestedWriter):
         ]
 
 
-class MasterStyles(NestedWriter):
+class MasterGenreWriter(NestedWriter):
+    def __init__(self, file_name=None) -> None:
+        super().__init__(file_name)
+        self.headers = ["master_id", "style"]
+
+    def get_sub_items(self, row):
+        return [
+            {"master_id": row.get("id"), "style": style.strip()}
+            for style in row.get("genre")
+        ]
+
+
+class MasterStylesWriter(NestedWriter):
     def __init__(self, file_name=None) -> None:
         super().__init__(file_name)
         self.headers = ["master_id", "style"]

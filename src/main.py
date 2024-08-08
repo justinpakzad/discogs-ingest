@@ -16,7 +16,7 @@ prefix = "data/"
 def get_args():
     parser = argparse.ArgumentParser(description="Discogs Ingest")
     parser.add_argument(
-        "--csv_dir", help="Enter directory to save files to.", required=True
+        "--dir", help="Enter directory to save files to.", required=True
     )
     parser.add_argument(
         "--raw_dir", help="Enter directory of raw data dumps", required=False
