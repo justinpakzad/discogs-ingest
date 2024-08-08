@@ -2,35 +2,36 @@ import csv
 
 
 class BaseWriter:
-    def __init__(self, file_name=None) -> None:
-        self.headers = []
+    def __init__(self, file_name=None, headers=None) -> None:
+        self.headers = headers or []
         self.file_name = file_name
         self.file = None
         self.writer = None
-        self.batch_size = 25_000
+        self.batch_size = 15_000
         self.buffer = []
 
     def open_file(self):
-        if self.file_name:
-            try:
-                self.file = open(self.file_name, mode="w", newline="")
-                self.writer = csv.DictWriter(self.file, fieldnames=self.headers)
-                self.writer.writeheader()
-            except Exception as e:
-                raise Exception(f"Failed to open/write to {self.file_name}.csv: {e}")
+        if not self.file:
+            self.file = open(self.file_name, mode="w", newline="")
+            self.writer = csv.DictWriter(self.file, fieldnames=self.headers)
+            self.writer.writeheader()
 
     def write_row(self, row):
         self.buffer.append(row)
-        if self.writer and len(self.buffer) >= self.batch_size:
+        if len(self.buffer) >= self.batch_size:
+            self.flush_buffer()
+
+    def flush_buffer(self):
+        if self.buffer:
             self.writer.writerows(self.buffer)
             self.buffer.clear()
 
     def close_file(self):
         if self.buffer:
-            self.writer.writerows(self.buffer)
-            self.buffer.clear()
+            self.flush_buffer()
         if self.file:
             self.file.close()
+            self.file = None
 
 
 class SimpleWriter(BaseWriter):
@@ -51,7 +52,7 @@ class NestedWriter(BaseWriter):
         self.close_file()
 
     def get_sub_items(self, row):
-        raise NotImplemented
+        raise NotImplementedError("Subclass must implement get_sub_items()")
 
 
 class LabelWriter(SimpleWriter):

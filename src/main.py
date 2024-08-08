@@ -8,6 +8,7 @@ import os
 from tqdm import tqdm
 import argparse
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 bucket_name = "discogs-data-dumps"
 prefix = "data/"
@@ -36,6 +37,30 @@ def get_args():
     return args
 
 
+def get_parsers(raw_data_path, args):
+    files_and_parsers = {
+        "label": ("discogs_20240701_labels.xml.gz", LabelParser),
+        "artist": ("discogs_20240701_artists.xml.gz", ArtistParser),
+        "release": ("discogs_20240701_releases.xml.gz", ReleaseParser),
+        "master": ("discogs_20240701_masters.xml.gz", MasterParser),
+    }
+    parsers = {}
+    for key, (filename, parser) in files_and_parsers.items():
+        file_path = raw_data_path / filename
+        parsers[key.split("_")[0]] = parser(file_path=file_path, sample=args.sample)
+    return parsers
+
+
+def process_data(writer, parser):
+    start_time = time.time()
+    parsed_data = parser.parse_file()
+    writer.write_rows(parsed_data)
+    writer.close_file()
+    end_time = time.time()
+    duration = (end_time - start_time) / 60
+    return f"{writer.__class__.__name__} completed in {duration:.2f} minutes."
+
+
 def main():
     base_path = Path(os.path.abspath("")).parent
 
@@ -46,29 +71,26 @@ def main():
 
     csv_path = base_path / args.dir if args.dir else None
     os.makedirs(csv_path, exist_ok=True)
-    writers = setup_writers(csv_path=csv_path)
     raw_data_path = base_path / args.raw_dir if args.raw_dir else base_path / "raw_data"
-    label_file = raw_data_path / "discogs_20240701_labels.xml.gz"
-    artist_file = raw_data_path / "discogs_20240701_artists.xml.gz"
-    release_file = raw_data_path / "discogs_20240701_releases.xml.gz"
-    master_file = raw_data_path / "discogs_20240701_masters.xml.gz"
-    label_parser = LabelParser(file_path=label_file, sample=args.sample)
-    artist_parser = ArtistParser(file_path=artist_file, sample=args.sample)
-    release_parser = ReleasesParser(file_path=release_file, sample=args.sample)
-    master_parser = MasterParser(file_path=master_file, sample=args.sample)
-    data_map = {
-        "label": label_parser,
-        "artist": artist_parser,
-        "release": release_parser,
-        "master": master_parser,
-    }
-    start = time.time()
-    for category, writer in tqdm(writers.items()):
-        cat = category.split("_")[0]
-        parser = data_map.get(cat)
-        writer.write_rows(parser.parse_file())
-    end = time.time()
-    print(f"Time taken {end - start}")
+    writers = setup_writers(csv_path=csv_path)
+    parsers = get_parsers(raw_data_path, args)
+    with ThreadPoolExecutor(max_workers=len(parsers)) as executor:
+        futures = {}
+        for writer_name, writer in writers.items():
+            base_category = writer_name.split("_")[0]
+            if base_category in parsers:
+                future = executor.submit(process_data, writer, parsers[base_category])
+                futures[future] = writer_name
+            else:
+                print(f"No parser available for {base_category}")
+
+        for future in as_completed(futures):
+            writer_name = futures[future]
+            try:
+                result = future.result()
+                print(f"{writer_name}: {result}")
+            except Exception as exc:
+                print(f"Error processing {writer_name}: {exc}")
 
 
 if __name__ == "__main__":

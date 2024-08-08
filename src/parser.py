@@ -187,7 +187,7 @@ class ArtistParser(BaseParser):
         }
 
 
-class ReleasesParser(BaseParser):
+class ReleaseParser(BaseParser):
     def __init__(self, file_path, sample=False) -> None:
         super().__init__(file_path, sample)
         self.tag = "release"
