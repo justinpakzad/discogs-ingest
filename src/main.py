@@ -44,7 +44,7 @@ def main():
     if args.download:
         S3DiscogsDowloader(bucket_name, prefix).run(directory=f"{base_path}/raw_data")
 
-    csv_path = base_path / args.csv_dir if args.csv_dir else None
+    csv_path = base_path / args.dir if args.dir else None
     os.makedirs(csv_path, exist_ok=True)
     writers = setup_writers(csv_path=csv_path)
     raw_data_path = base_path / args.raw_dir if args.raw_dir else base_path / "raw_data"
