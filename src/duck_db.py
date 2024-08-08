@@ -51,9 +51,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# create_tables(
-#         "/Users/justinpakzad/code/duck_dbs",
-#         "/Users/justinpakzad/code/discogs_project/discogs_ingest/discogs_data",
-#     )
