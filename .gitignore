@@ -4,3 +4,4 @@ notebooks/
 .python-version
 src/__pycache__/
 discogs_data/
+discogs_data_v2/
