@@ -39,6 +39,6 @@ The CSV files must be downloaded in order to make use of the DuckDB exporter.
 ```
 python duck_db.py --db <db_path> --csvs <csv_path>
 ```  
-## Data Model
+
 
 
